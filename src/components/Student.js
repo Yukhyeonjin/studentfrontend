@@ -13,13 +13,30 @@ export default function Student() {
     const paperStyle = {padding : '50px 20px', width:600, margin: "20px auto"};
     const [name,setName] = React.useState('');
     const [address,setAddress] = React.useState('')
+    const [students,setStudents] = React.useState([])
     //const classes = useStyles();
 
     const handleClick=(e)=>{
         e.preventDefault();
         const student = {name, address};
         console.log(student);
+        fetch("http://localhost:8080/student/add",{
+          method:"POST",
+          headers:{"Content-Type" : "application/json"},
+          body:JSON.stringify(student)
+        }).then(()=>{
+          alert('성도가 추가되었습니다.');
+        });
     }
+
+    React.useEffect(()=>{
+      fetch("http://localhost:8080/student/getAll")
+      .then(res=>res.json())
+      .then((result)=>{
+        setStudents(result);
+      }
+    )
+    },[]);
   
     return (
     <Container>
@@ -40,8 +57,23 @@ export default function Student() {
       {/* <TextField id="filled-basic" label="Filled" variant="filled" />
       <TextField id="standard-basic" label="Standard" variant="standard" /> */}
       </form>
-      {name}
-      {address}  
+
+    </Paper>
+      <h1>성도들</h1>
+
+        <Paper elevation={3} style={paperStyle}>
+
+      {students.map(student=>(
+        <Paper elevation={6} style={{margin:"10px",padding:"15px", textAlign:"left"}} key={student.id}>
+         Id:{student.id}<br/>
+         Name:{student.name}<br/>
+         Address:{student.address}
+
+        </Paper>
+      ))
+}
+
+
     </Paper>
     </Container>
   );
